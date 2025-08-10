@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchNasaDataByDate } from '../services/nasaService';
+import { saveData, loadData, saveCurrentDisplayedDate, loadCurrentDisplayedDate } from '../services/storageService';
+
 import 'swiper/css';
 import 'views/App.css';
 import 'swiper/css/navigation';
@@ -17,16 +19,14 @@ function Root() {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedDate, setSelectedDate] = useState('');
-    const [currentDisplayedDate, setCurrentDisplayedDate] = useState(JSON.parse(window.localStorage.getItem('currentDisplayedDate')) || {});
+    const [currentDisplayedDate, setCurrentDisplayedDate] = useState(() => loadCurrentDisplayedDate() || {});
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     useEffect(() => {
         setIsLoading(false);
-        if (window.localStorage !== undefined) {
-            const data = window.localStorage.getItem('data');
-            if (data) {
-                setData(JSON.parse(data));
-            }
-        }
+    const storedData = loadData();
+    if (storedData) {
+     setData(storedData);
+    }
     }, []);
 
     const handleDate = ({ target }) => {
@@ -47,10 +47,10 @@ function Root() {
         e.preventDefault();
         setCurrentDisplayedDate(selectedDate);
         setCurrentSlideIndex(0);
-        localStorage.setItem('currentDisplayedDate', JSON.stringify(selectedDate));
+        saveCurrentDisplayedDate(selectedDate);
         fetchNasaDataByDate(selectedDate.fullDate)
             .then((data) => {
-                localStorage.setItem('data', JSON.stringify(data));
+                saveData(data);
                 setData({ data });
             })
             .catch((error) => {
