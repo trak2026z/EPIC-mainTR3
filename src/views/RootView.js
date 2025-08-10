@@ -11,6 +11,7 @@ import CurrentSlideInfo from 'components/molecues/CurrentSlideInfo/CurrentSlideI
 export default function RootView({
   data,
   isLoading,
+  error,
   selectedDate,
   currentDisplayedDate,
   currentSlideIndex,
@@ -34,6 +35,11 @@ export default function RootView({
                 currentSlideIndex={currentSlideIndex}
                 distanceBetweenObjects={distanceBetweenObjects}
               />
+              {error && (
+                <p style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  {error}
+                </p>
+              )}
               {/* Debug podgląd daty */}
               {selectedDate && (
                 <p style={{ fontSize: '0.8rem', color: '#888' }}>
