@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNasaData } from '../hooks/useNasaData';
-import { saveCurrentDisplayedDate, loadCurrentDisplayedDate } from '../services/storageService';
+import { usePersistentState } from '../hooks/usePersistentState';
 
 import { parseDateInput } from '../services/dateService';
 import RootView from '../views/RootView';
@@ -8,9 +8,8 @@ import RootView from '../views/RootView';
 export default function RootContainer() {
   const { data, isLoading, error, fetchByDate } = useNasaData();
   const [selectedDate, setSelectedDate] = useState(null);
-  const [currentDisplayedDate, setCurrentDisplayedDate] = useState(
-    () => loadCurrentDisplayedDate() || {}
-  );
+  const [currentDisplayedDate, setCurrentDisplayedDate] = usePersistentState('currentDisplayedDate', {});
+
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   // Odległość między obiektami
@@ -33,7 +32,6 @@ export default function RootContainer() {
 
     setCurrentDisplayedDate(selectedDate);
     setCurrentSlideIndex(0);
-    saveCurrentDisplayedDate(selectedDate);
 
     fetchByDate(selectedDate.fullDate);
         
