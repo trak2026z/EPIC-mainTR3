@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { fetchNasaDataByDate } from '../services/nasaService';
 import 'swiper/css';
 import 'views/App.css';
 import 'swiper/css/navigation';
@@ -12,7 +12,6 @@ import SwiperComponent from 'components/organisms/SwiperComponent/SwiperComponen
 import LeftComponent from 'components/organisms/LeftComponent/LeftComponent';
 import CurrentSlideInfo from 'components/molecues/CurrentSlideInfo/CurrentSlideInfo';
 
-const API_KEY = process.env.REACT_APP_API_KEY;
 
 function Root() {
     const [data, setData] = useState([]);
@@ -49,15 +48,13 @@ function Root() {
         setCurrentDisplayedDate(selectedDate);
         setCurrentSlideIndex(0);
         localStorage.setItem('currentDisplayedDate', JSON.stringify(selectedDate));
-        axios
-//            .get(`https://api.nasa.gov/EPIC/api/natural/date/${selectedDate.fullDate}?api_key=d9G1A1OxV1OBV3hLs4Zpo5aGBojsIUFgBfbAadwf`)
-              .get(`https://api.nasa.gov/EPIC/api/natural/date/${selectedDate.fullDate}?api_key=${API_KEY}`)
-            .then(function (response) {
-                localStorage.setItem('data', JSON.stringify(response));
-                setData(response);
+        fetchNasaDataByDate(selectedDate.fullDate)
+            .then((data) => {
+                localStorage.setItem('data', JSON.stringify(data));
+                setData({ data });
             })
-            .catch(function (error) {
-                console.log(error);
+            .catch((error) => {
+                console.error(error);
             });
     };
 
