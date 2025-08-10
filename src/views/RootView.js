@@ -16,7 +16,8 @@ export default function RootView({
   currentSlideIndex,
   handleForm,
   handleDate,
-  setCurrentSlideIndex
+  setCurrentSlideIndex,
+  distanceBetweenObjects
 }) {
   return (
     <ThemeProvider theme={theme}>
@@ -31,10 +32,17 @@ export default function RootView({
                 isLoading={isLoading}
                 data={data.data}
                 currentSlideIndex={currentSlideIndex}
+                distanceBetweenObjects={distanceBetweenObjects}
               />
+              {/* Debug podgląd daty */}
+              {selectedDate && (
+                <p style={{ fontSize: '0.8rem', color: '#888' }}>
+                  Selected date: {selectedDate.fullDate}
+                </p>
+              )}
             </div>
             <div className="right">
-              {data.data && data.data.length > 0 ? (
+              {data.data && data.data.length > 0 && (
                 <>
                   <SwiperComponent
                     data={data.data}
@@ -46,7 +54,8 @@ export default function RootView({
                     allSlides={data.data.length}
                   />
                 </>
-              ) : (
+              )}
+              {data.data && data.data.length === 0 && (
                 <p>No images available for the selected date.</p>
               )}
             </div>

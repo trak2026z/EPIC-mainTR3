@@ -1,23 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { fetchNasaDataByDate } from '../services/nasaService';
-import { saveData, loadData, saveCurrentDisplayedDate, loadCurrentDisplayedDate } from '../services/storageService';
+import React, { useState } from 'react';
+import { useNasaData } from '../hooks/useNasaData';
+import { saveCurrentDisplayedDate, loadCurrentDisplayedDate } from '../services/storageService';
+
 import { parseDateInput } from '../services/dateService';
 import RootView from '../views/RootView';
 
 export default function RootContainer() {
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [currentDisplayedDate, setCurrentDisplayedDate] = useState(() => loadCurrentDisplayedDate() || {});
+  const { data, isLoading, error, fetchByDate } = useNasaData();
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [currentDisplayedDate, setCurrentDisplayedDate] = useState(
+    () => loadCurrentDisplayedDate() || {}
+  );
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-  useEffect(() => {
-    setIsLoading(false);
-    const storedData = loadData();
-    if (storedData) {
-      setData(storedData);
-    }
-  }, []);
+  // Odległość między obiektami
+  const distanceBetweenObjects = (posA, posB) => {
+    const distance = Math.sqrt(
+      Math.pow(posB.x - posA.x, 2) +
+        Math.pow(posB.y - posA.y, 2) +
+        Math.pow(posB.z - posA.z, 2)
+    );
+    return `${Number(distance.toFixed(2))}km`;
+  };
 
   const handleDate = ({ target }) => {
     setSelectedDate(parseDateInput(target.value));
@@ -25,28 +29,29 @@ export default function RootContainer() {
 
   const handleForm = (e) => {
     e.preventDefault();
+    if (!selectedDate?.fullDate) return;
+
     setCurrentDisplayedDate(selectedDate);
     setCurrentSlideIndex(0);
     saveCurrentDisplayedDate(selectedDate);
 
-    fetchNasaDataByDate(selectedDate.fullDate)
-      .then((responseData) => {
-        saveData(responseData);
-        setData(responseData);
-      })
-      .catch(console.error);
-  };
+    fetchByDate(selectedDate.fullDate);
+        
+      };
+  
 
   return (
     <RootView
       data={data}
       isLoading={isLoading}
+      error={error}
       selectedDate={selectedDate}
       currentDisplayedDate={currentDisplayedDate}
       currentSlideIndex={currentSlideIndex}
       handleForm={handleForm}
       handleDate={handleDate}
       setCurrentSlideIndex={setCurrentSlideIndex}
+      distanceBetweenObjects={distanceBetweenObjects}
     />
   );
 }
