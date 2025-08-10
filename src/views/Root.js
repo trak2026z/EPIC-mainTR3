@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchNasaDataByDate } from '../services/nasaService';
 import { saveData, loadData, saveCurrentDisplayedDate, loadCurrentDisplayedDate } from '../services/storageService';
 import { parseDateInput } from '../services/dateService'; 
+import { distanceBetweenObjects } from '../services/mathService';
 
 import 'swiper/css';
 import 'views/App.css';
@@ -49,10 +50,6 @@ function Root() {
             });
     };
 
-    const distanceBetweenObjects = (posA, posB) => {
-        const distance = Math.sqrt(Math.pow(posB.x - posA.x, 2) + Math.pow(posB.y - posA.y, 2) + Math.pow(posB.z - posA.z, 2));
-        return `${Number(distance.toFixed(2))}km`;
-    };
 
     return (
         <ThemeProvider theme={theme}>
