@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchNasaDataByDate } from '../services/nasaService';
 import { saveData, loadData, saveCurrentDisplayedDate, loadCurrentDisplayedDate } from '../services/storageService';
+import { parseDateInput } from '../services/dateService'; 
 
 import 'swiper/css';
 import 'views/App.css';
@@ -30,17 +31,7 @@ function Root() {
     }, []);
 
     const handleDate = ({ target }) => {
-        const fullDate = target.value;
-        const dateObject = new Date(target.value);
-        const day = String(dateObject.getDate()).padStart(2, '0');
-        const month = String(dateObject.getMonth() + 1).padStart(2, '0');
-        const year = dateObject.getFullYear();
-        setSelectedDate({
-            fullDate,
-            day,
-            month,
-            year,
-        });
+        setSelectedDate(parseDateInput(target.value));
     };
 
     const handleForm = (e) => {
